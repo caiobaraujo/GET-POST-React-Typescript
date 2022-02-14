@@ -2,6 +2,7 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { Posts } from './types/Posts';
 import { PostForm } from './components/PostForm';
 import { PostItem } from './components/PostItem';
+import { api } from './api';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -13,26 +14,14 @@ const App = () => {
 
   const loadPosts = async () => {
     setLoading(true);
-    let response = await fetch('https://jsonplaceholder.typicode.com/posts');
-    let data = await response.json();
+    let data = await api.getPosts();
+
     setLoading(false);
     setPosts(data);
   };
 
   const handleAddPost = async (title: string, body: string) => {
-    let response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-      method: 'POST',
-      body: JSON.stringify({
-        title,
-        body,
-        userId: 1,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    let data = await response.json();
+    let data = await api.addNewPost(title, body, 1);
     setPosts([...posts, data]);
 
     if (data.id) {
